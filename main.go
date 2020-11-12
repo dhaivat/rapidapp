@@ -1,12 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"hello-run/stocks"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 
 	"cloud.google.com/go/compute/metadata"
+	"github.com/gorilla/mux"
 )
 
 // templateData provides template parameters.
@@ -65,11 +68,17 @@ func main() {
 		ProjectFound: projectFound,
 	}
 
-	// Define HTTP server.
-	http.HandleFunc("/", helloRunHandler)
+	// Setup Gorilla
 
+	r := mux.NewRouter()
+	r.HandleFunc("/quote/{ticker}", quoteHandler)
+	r.HandleFunc("/env", envHandler)
+	r.HandleFunc("/say/{message}", sayHandler)
+	// Define HTTP server.
+	r.HandleFunc("/", helloRunHandler)
 	fs := http.FileServer(http.Dir("./assets"))
-	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	r.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	http.Handle("/", r)
 
 	// PORT environment variable is provided by Cloud Run.
 	port := os.Getenv("PORT")
@@ -94,7 +103,24 @@ func helloRunHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func quoteHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	if ticker, ok := vars["ticker"]; ok {
+		price := stocks.GetPrice(ticker)
+		w.Write([]byte(fmt.Sprintf("current price for %v: %v", vars["ticker"], price)))
+	}
 
+}
+
+func envHandler(w http.ResponseWriter, r *http.Request) {
+	for _, e := range os.Environ() {
+		w.Write([]byte(e))
+	}
+}
+
+func sayHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	if message, ok := vars["message"]; ok {
+		w.Write([]byte(fmt.Sprintf("you said %v", message)))
+	}
 }

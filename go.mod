@@ -4,5 +4,6 @@ go 1.13
 
 require (
 	cloud.google.com/go v0.71.0
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/hashicorp/go-retryablehttp v0.6.7
 )
