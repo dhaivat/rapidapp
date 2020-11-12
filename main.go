@@ -115,6 +115,7 @@ func quoteHandler(w http.ResponseWriter, r *http.Request) {
 func envHandler(w http.ResponseWriter, r *http.Request) {
 	for _, e := range os.Environ() {
 		w.Write([]byte(e))
+		w.Write([]byte("\n"))
 	}
 }
 
