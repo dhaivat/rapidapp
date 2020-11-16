@@ -39,7 +39,6 @@ func GetPrice(ticker string) float64 {
 		log.Println(err)
 		log.Println(resp)
 		return -1.0
-	} else {
-		return resp[0].Bid
 	}
+	return resp[0].Bid
 }

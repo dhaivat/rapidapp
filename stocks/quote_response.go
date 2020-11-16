@@ -2,9 +2,9 @@ package stocks
 
 // QuoteResponseWrapper is a POGO for JSON Result from Yahoo Finance API
 type QuoteResponseWrapper struct {
-	QuoteResponse QuoteResponse `json:"quoteResponse"`
+	QuoteResponse quoteResponse `json:"quoteResponse"`
 }
-type QuoteResponse struct {
+type quoteResponse struct {
 	Result []Quote `json:"result"`
 }
 

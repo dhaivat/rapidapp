@@ -6,8 +6,15 @@ import (
 	"testing"
 )
 
-const (
-	sampleResp = `{
+var (
+	testData = struct {
+		wantResults        int
+		wantPrice          float64
+		sampleJsonResponse string
+	}{
+		wantResults: 1,
+		wantPrice:   412.55,
+		sampleJsonResponse: `{
 		"quoteResponse":{
 		   "result":[
 			  {
@@ -33,22 +40,22 @@ const (
 			  }
 		   ]
 		}
-	 }`
+	 }`}
 )
 
 func TestStockParser(t *testing.T) {
 	result := stocks.QuoteResponseWrapper{}
-	if err := json.Unmarshal([]byte(sampleResp), &result); err != nil {
+	if err := json.Unmarshal([]byte(testData.sampleJsonResponse), &result); err != nil {
 		t.Fatalf("unmarshal failed with %v", err)
 	}
 
 	if len(result.QuoteResponse.Result) != 1 {
-		t.Fatalf("want 1 result, got %v", len(result.QuoteResponse.Result))
+		t.Fatalf("want %v result, got %v", testData.wantResults, len(result.QuoteResponse.Result))
 	}
 
 	quoteResult := result.QuoteResponse.Result[0]
 	if quoteResult.Bid != 412.55 {
-		t.Fatalf("wanted %v, got %v", 412.55, quoteResult.Bid)
+		t.Fatalf("wanted %v, got %v", testData.wantPrice, quoteResult.Bid)
 	}
 
 }
