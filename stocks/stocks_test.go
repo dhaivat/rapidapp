@@ -1,8 +1,7 @@
-package stocks_test
+package stocks
 
 import (
 	"encoding/json"
-	"hello-run/stocks"
 	"testing"
 )
 
@@ -10,11 +9,11 @@ var (
 	testData = struct {
 		wantResults        int
 		wantPrice          float64
-		sampleJsonResponse string
+		sampleJSONResponse string
 	}{
 		wantResults: 1,
 		wantPrice:   412.55,
-		sampleJsonResponse: `{
+		sampleJSONResponse: `{
 		"quoteResponse":{
 		   "result":[
 			  {
@@ -44,18 +43,20 @@ var (
 )
 
 func TestStockParser(t *testing.T) {
-	result := stocks.QuoteResponseWrapper{}
-	if err := json.Unmarshal([]byte(testData.sampleJsonResponse), &result); err != nil {
+	result := QuoteResponseWrapper{}
+	if err := json.Unmarshal([]byte(testData.sampleJSONResponse), &result); err != nil {
 		t.Fatalf("unmarshal failed with %v", err)
 	}
 
+	// must return single quote
 	if len(result.QuoteResponse.Result) != 1 {
 		t.Fatalf("want %v result, got %v", testData.wantResults, len(result.QuoteResponse.Result))
 	}
 
 	quoteResult := result.QuoteResponse.Result[0]
-	if quoteResult.Bid != 412.55 {
+
+	// price parsing
+	if testData.wantPrice != quoteResult.Bid {
 		t.Fatalf("wanted %v, got %v", testData.wantPrice, quoteResult.Bid)
 	}
-
 }
